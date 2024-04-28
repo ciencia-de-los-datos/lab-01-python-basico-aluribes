@@ -12,6 +12,19 @@ Utilice el archivo `data.csv` para resolver las preguntas.
 
 """
 
+# python -m venv .venv
+# .venv\Scripts\activate
+# python.exe -m pip install --upgrade pip
+
+def open_data():
+    with open("data.csv", "r") as file:
+        lines = file.readlines()
+        return lines
+
+# Limpiamos la data, la cual está separada por \t
+def clean_data():
+    lines = open_data()
+    return [line.split("\t") for line in lines]
 
 def pregunta_01():
     """
@@ -21,8 +34,9 @@ def pregunta_01():
     214
 
     """
-    return
+    return sum([int(row[1]) for row in clean_data()])
 
+#print(pregunta_01())
 
 def pregunta_02():
     """
@@ -39,8 +53,23 @@ def pregunta_02():
     ]
 
     """
-    return
-
+    
+    # Retorne la cantidad de registros por cada letra de la primera columna como la lista de tuplas (letra, cantidad), ordendas alfabéticamente.
+    
+    data = clean_data()
+    dic = {}
+    
+    # Itera sobre las filas del archivo
+    for row in data:
+        # Si la letra ya está en el diccionario, suma 1 al valor
+        if row[0] in dic:
+            dic[row[0]] += 1
+        # Si no está, crea la llave con valor 1
+        else:
+            dic[row[0]] = 1
+            
+    # Retorna una lista de tuplas (clave, valor) ordenada alfabéticamente
+    return sorted(dic.items())
 
 def pregunta_03():
     """
@@ -57,7 +86,20 @@ def pregunta_03():
     ]
 
     """
-    return
+    
+    data = clean_data()
+    dic = {}
+    
+    for row in data:
+        # Si la letra ya está en el diccionario, suma 1 al valor
+        if row[0] in dic:
+            dic[row[0]] += int(row[1])
+        # Si no está, crea la llave con valor 1
+        else:
+            dic[row[0]] = int(row[1])
+            
+    # Retorna una lista de tuplas (clave, valor) ordenada alfabéticamente
+    return sorted(dic.items())
 
 
 def pregunta_04():
@@ -82,8 +124,25 @@ def pregunta_04():
     ]
 
     """
-    return
-
+    
+    data = clean_data()
+    dic = {}
+    
+    dates = [z[2] for z in data]
+    # separa Date en sus partes
+    dates = [z.split("-") for z in dates]
+    
+    # Itera sobre las filas del archivo
+    for row in dates:
+        # Si el mes ya está en el diccionario, suma 1 al valor
+        if row[1] in dic:
+            dic[row[1]] += 1
+        # Si no está, crea la llave con valor 1
+        else:
+            dic[row[1]] = 1
+            
+    # Retorna una lista de tuplas (clave, valor) ordenada
+    return sorted(dic.items())
 
 def pregunta_05():
     """
@@ -100,7 +159,23 @@ def pregunta_05():
     ]
 
     """
-    return
+    
+    data = clean_data()
+
+    dic = {} # Diccionario para almacenar los valores máximos y mínimos
+
+    # Iteramos sobre las filas del archivo
+    for row in data:
+
+        # Si la letra ya está en el diccionario, comparamos el valor actual con el valor máximo y mínimo
+        if row[0] in dic:
+            dic[row[0]] = (max(dic[row[0]][0], int(row[1])), min(dic[row[0]][1], int(row[1])))
+        # Si no está, creamos la llave con el valor actual
+        else:
+            dic[row[0]] = (int(row[1]), int(row[1]))
+
+    # Retornamos una lista de tuplas (clave, valor máximo, valor mínimo) ordenada alfabéticamente
+    return sorted([(key, value[0], value[1]) for key, value in dic.items()])
 
 
 def pregunta_06():
@@ -125,7 +200,22 @@ def pregunta_06():
     ]
 
     """
-    return
+    
+    data = clean_data()
+    dic = {}
+    
+    new_data = [z[4] for z in data]
+    new_data = [z.strip().split(",") for z in new_data]
+    
+    for x in new_data:
+        for y in x:
+            key, value = y.split(":")
+            if key in dic:
+                dic[key]= (max(dic[key][0], int(value)), min(dic[key][1], int(value)))
+            else:
+                dic[key] = (int(value), int(value))
+    
+    return sorted([(key, value[1], value[0]) for key, value in dic.items()])
 
 
 def pregunta_07():
@@ -149,8 +239,17 @@ def pregunta_07():
     ]
 
     """
-    return
+    data = clean_data()
+    dic = {}
+    
+    # Iteramos sobre las filas del archivo
+    for row in data:
+        if row[1] in dic:
+            dic[row[1]].append(row[0])
+        else:
+            dic[row[1]] = [row[0]]
 
+    return sorted([(int(key), value) for key, value in dic.items()])
 
 def pregunta_08():
     """
@@ -174,7 +273,18 @@ def pregunta_08():
     ]
 
     """
-    return
+    
+    data = clean_data()
+    dic = {}
+    
+    # Iteramos sobre las filas del archivo
+    for row in data:
+        if row[1] in dic:
+            dic[row[1]].add(row[0])
+        else:
+            dic[row[1]] = {row[0]}
+    
+    return sorted([(int(key), sorted(list(value))) for key, value in dic.items()])
 
 
 def pregunta_09():
@@ -197,7 +307,22 @@ def pregunta_09():
     }
 
     """
-    return
+    
+    data = clean_data()
+    dic = {}
+    
+    new_data = [z[4] for z in data]
+    new_data = [z.strip().split(",") for z in new_data]
+    
+    for x in new_data:
+        for y in x:
+            key,_ = y.split(":")
+            if key in dic:
+                dic[key] += 1
+            else:
+                dic[key] = 1
+
+    return dict(sorted(dic.items()))
 
 
 def pregunta_10():
@@ -218,7 +343,9 @@ def pregunta_10():
 
 
     """
-    return
+    data = clean_data()
+    
+    return [(row[0], len(row[3].split(",")), len(row[4].split(","))) for row in data]
 
 
 def pregunta_11():
@@ -239,7 +366,18 @@ def pregunta_11():
 
 
     """
-    return
+    data = clean_data()
+    dic = {}
+    
+    for row in data:
+        for letter in row[3].split(","):
+            if letter in dic:
+                dic[letter] += int(row[1])
+            else:
+                dic[letter] = int(row[1])
+    
+    return dict(sorted(dic.items()))
+
 
 
 def pregunta_12():
@@ -257,4 +395,15 @@ def pregunta_12():
     }
 
     """
-    return
+    data = clean_data()
+    dic = {}
+    
+    for row in data:
+        for letter in row[4].split(","):
+            _, value = letter.split(":")
+            if row[0] in dic:
+                dic[row[0]] += int(value)
+            else:
+                dic[row[0]] = int(value)
+    
+    return dict(sorted(dic.items()))
